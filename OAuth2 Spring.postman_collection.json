@@ -1,0 +1,364 @@
+{
+	"info": {
+		"_postman_id": "dccdaddc-1662-4666-a57b-e836a23aa2ec",
+		"name": "OAuth2 Spring",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "token for client 1 - has scope1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "99234d6d-02c7-4d27-b37f-e895fc188335",
+						"exec": [
+							"var response = pm.response.json();",
+							"pm.environment.set(\"token\", response.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "clientsecret1",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "client1",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "john",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "johnspassword",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8081/oauth/token",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"oauth",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "token for client2 - has scope2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "01f07da5-b260-44da-9525-79f50fc9b088",
+						"exec": [
+							"var response = pm.response.json();",
+							"pm.environment.set(\"token\", response.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "clientsecret2",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "client2",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "john",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "johnspassword",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8081/oauth/token",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"oauth",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "token for client3 - does not have any scopes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b0fdf5e3-a5cb-4f69-853c-3d8846b13030",
+						"exec": [
+							"var response = pm.response.json();",
+							"pm.environment.set(\"token\", response.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "clientsecret3",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "client3",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "john",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "johnspassword",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8081/oauth/token",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"oauth",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "jwk",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/.well-known/jwks.json",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						".well-known",
+						"jwks.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get message",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huIiwiZXhwIjoyMTY5MjgxMzI5LCJhdXRob3JpdGllcyI6WyJST0xFX1VTRVIiXSwianRpIjoiZGRhZDNmYTgtMmMxNS00MTczLTgzM2ItZjU5OTk5ODA3ZGE0IiwiY2xpZW50X2lkIjoiY2xpZW50MiIsInNjb3BlIjpbIlNDT1BFMiJdfQ.PGzRgKRiqdGdsIMog1OI13Rh2B4dkRSx6FDW4f9CDoMeLYf0BvV1nXlN8S3DzoQCGjpTG6yARL0z3VkpSYMw_ITivYn56OQYlRoWu5vMxr51Nw8IG-CGM4mPR4sM-vvEHL2l0arUgTX8C6UrWRwXFz_2g27VpSelbrsjvV3DqKAH_bJ2oe_PCiku4WKTB0rI_OXr1kh5PxCJmUULYwcEYhCEb3Dvlbl5Zu3hOkTcX6ky9BuQGArFXhIfdEVdbLGW2_v_M0kAd5PZSLIjHj_7kQICsf2HpIU5hOy4aZMDP2iLFMJDVKqOPyxPmKReF5gHAzDaWXxW5osw13BuJiaR5w",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8092/message",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8092",
+					"path": [
+						"message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "needscope1",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8093/needscope1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8093",
+					"path": [
+						"needscope1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "needscope2",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8093/needscope2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8093",
+					"path": [
+						"needscope2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "needauthenticated",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8093/needauthenticated",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8093",
+					"path": [
+						"needauthenticated"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
