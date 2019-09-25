@@ -21,14 +21,13 @@ import java.security.KeyPair;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 
+//import com.sun.tools.javac.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +39,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -47,9 +47,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.endpoint.FrameworkEndpoint;
-import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.DefaultUserAuthenticationConverter;
-import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.*;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
@@ -88,12 +86,14 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 				.secret("{noop}clientsecret1")
 				.scopes("SCOPE1")
 				.accessTokenValiditySeconds(10)
+				.resourceIds("AUD1", "AUD2")
 				.and()
 			.withClient("client2")
 				.authorizedGrantTypes("password")
 				.secret("{noop}clientsecret2")
 				.scopes("SCOPE2")
 				.accessTokenValiditySeconds(600_000_000)
+				.resourceIds("AUD3", "AUD4")
 				.and()
 			.withClient("client3")
 				.authorizedGrantTypes("password")
@@ -105,15 +105,19 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 	@Override
 	public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+
+		TokenEnhancerChain chain = new TokenEnhancerChain();
+		List<TokenEnhancer> enhancersList = new ArrayList<>();
+		enhancersList.add(tokenEnhancer());
+		if (jwtEnabled) {
+			enhancersList.add(accessTokenConverter());
+		}
+		chain.setTokenEnhancers(enhancersList);
 		// @formatter:off
 		endpoints
+			.tokenEnhancer(chain)
 			.authenticationManager(this.authenticationManager)
 			.tokenStore(tokenStore());
-
-		if (this.jwtEnabled) {
-			endpoints
-				.accessTokenConverter(accessTokenConverter());
-		}
 		// @formatter:on
 	}
 
@@ -136,6 +140,22 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		converter.setAccessTokenConverter(accessTokenConverter);
 
 		return converter;
+	}
+
+	private TokenEnhancer tokenEnhancer() {
+		return (accessToken, authentication) -> {
+			if (authentication != null && authentication.getPrincipal() instanceof User) {
+				User user = (User) authentication.getPrincipal();
+				String customClaimValue = "unimportant_person";
+				if (user != null && user.getUsername().equals("sam")) {
+					customClaimValue = "important_person";
+				}
+				Map<String, Object> additionalInfo = new HashMap<>();
+				additionalInfo.put("custom_claim", customClaimValue);
+				((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
+			}
+			return accessToken;
+		};
 	}
 }
 
@@ -164,7 +184,12 @@ class UserConfig extends WebSecurityConfigurerAdapter {
 				User.withDefaultPasswordEncoder()
 					.username("john")
 					.password("johnspassword")
-					.roles("USER")
+					.roles("ASSOCIATE")
+					.build(),
+				User.withDefaultPasswordEncoder()
+					.username("sam")
+					.password("samspassword")
+					.roles("MANAGER")
 					.build());
 	}
 }
