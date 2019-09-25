@@ -7,11 +7,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
 
     public static final String SCOPE = "scope";
+    public static final String EXP = "exp";
 
     private Object filterObject;
     private Object returnObject;
@@ -60,7 +62,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
                 break; // Found one valid scope. No need to continue;
             }
         }
-        return isAuthorized;
+        return isAuthorized && isTokenLive();
     }
 
     private Object getTokenAttribute(String attributeName) {
@@ -81,5 +83,16 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
             scopeList = new ArrayList<>();
         }
         return scopeList;
+    }
+
+    public boolean isTokenLive(){
+        boolean isTokenLive = false;
+        Object tokenExpiry = getTokenAttribute(EXP);
+        if (tokenExpiry != null && tokenExpiry instanceof java.time.Instant) {
+            if (((java.time.Instant) tokenExpiry).isAfter(new Date().toInstant())) {
+                isTokenLive = true;
+            }
+        }
+        return isTokenLive;
     }
 }

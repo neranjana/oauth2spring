@@ -57,7 +57,7 @@ public class OAuth2ResourceServerController {
 		return "scope1 or scope 2 can see this";
 	}
 
-	@PreAuthorize("isAuthenticated()")
+	@PreAuthorize("isAuthenticated() and isTokenLive()")
 	@GetMapping("/needauthenticated")
 	@ResponseBody
 	public String needauthenticated() {
